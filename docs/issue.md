@@ -34,6 +34,15 @@
     ````
 
 - [] create user endpoint
+  - [x]create base entity model
+    - id,status,trxdate
+  - [x]create user model 
+    - first name
+    - last name
+    - email
+    - phone
+    - organization
+    - unit
   - pull user information
   - store user information
   - create user table
