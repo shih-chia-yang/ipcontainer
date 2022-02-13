@@ -6,7 +6,5 @@
 dotnet --version
 ````
 
-
-
 - infrastructure安裝 ef package 
 
