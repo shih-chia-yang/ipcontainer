@@ -1,6 +1,6 @@
 # issue
 
-- [] create sln
+- [x] create sln
   -  建立方案與專案
     ````bash
     dotnet new sln -o api_practice 
@@ -8,21 +8,21 @@
     
     ````
 
-- [] create webapi project
+- [x] create webapi project
 
     ````
     dotnet new webapi -o practice.api
     dotnet sln add ./practice.api
     ````
 
-- [] create classlib project
+- [x] create classlib project
 
     ````
     dotnet new classlib -o practice.infrastructure
     dotnet sln add ./practice.infrastructure
     ````
 
-- [] add package
+- [x] add package
 
     ````
     dotnet add ./practice.infrastructure package Microsoft.EntityFrameworkCore
