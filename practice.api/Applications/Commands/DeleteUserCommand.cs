@@ -2,7 +2,7 @@ namespace practice.api.Applications.Commands;
 
 public class DeleteUserCommand:IEventRequest
 {
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
 }
 
 public class DeleteUserCommandHandler : IEventHandler<DeleteUserCommand, bool>

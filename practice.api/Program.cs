@@ -25,7 +25,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     var scope=app.Services.CreateScope();
     var context = scope.ServiceProvider.GetService<UserContext>();
-    await DbInitials.SeedAsync(context);
+    if(context != null)
+        await DbInitials.SeedAsync(context);
 }
 
 app.UseHttpsRedirection();

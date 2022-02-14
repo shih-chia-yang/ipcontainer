@@ -3,10 +3,10 @@ namespace practice.api.Applications.Commands;
 
 public class UpdateUserCommand:IEventRequest
 {
-    public string Email { get; set; }
-    public string Phone { get; set; }
-    public string Organization { get; set; }
-    public string Unit { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string Organization { get; set; } = string.Empty;
+    public string Unit { get; set; } = string.Empty;
 }
 
 public class UpdateUserCommandHandler : IEventHandler<UpdateUserCommand, User>
