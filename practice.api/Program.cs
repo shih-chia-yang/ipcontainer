@@ -16,15 +16,16 @@ builder.Services.AddTransient<IEventHandler<UpdateUserCommand, User>, UpdateUser
 builder.Services.AddTransient<IEventHandler<DeleteUserCommand, bool>, DeleteUserCommandHandler>();
 
 var app = builder.Build();
-var scope=app.Services.CreateScope();
-var context = scope.ServiceProvider.GetService<UserContext>();
-await DbInitials.SeedAsync(context);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    var scope=app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetService<UserContext>();
+    await DbInitials.SeedAsync(context);
 }
 
 app.UseHttpsRedirection();
