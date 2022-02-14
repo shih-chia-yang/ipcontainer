@@ -1,21 +1,24 @@
 using Microsoft.EntityFrameworkCore;
-using practice.domain.Repositories;
-using practice.infrastructure;
-using practice.infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<UserContext>(options=>options.UseInMemoryDatabase("identity_app"));
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
-
+builder.Services.AddTransient<IEventHandler<AddUserCommand, User>, AddUserCommandHandler>();
+builder.Services.AddTransient<IEventHandler<UpdateUserCommand, User>, UpdateUserCommandHandler>();
+builder.Services.AddTransient<IEventHandler<DeleteUserCommand, bool>, DeleteUserCommandHandler>();
 
 var app = builder.Build();
+var scope=app.Services.CreateScope();
+var context = scope.ServiceProvider.GetService<UserContext>();
+await DbInitials.SeedAsync(context);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

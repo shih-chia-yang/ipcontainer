@@ -20,7 +20,9 @@
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_Kestrel__Certificates__Default__Password": "eric49290061",
+                "ASPNETCORE_Kestrel__Certificates__Default__Path": "${env:HOME}/.aspnet/https/localhost.pfx"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
