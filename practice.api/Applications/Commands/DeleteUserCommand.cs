@@ -1,4 +1,4 @@
-namespace practice.api.Controllers.Applications.Commands;
+namespace practice.api.Applications.Commands;
 
 public class DeleteUserCommand:IEventRequest
 {
@@ -13,12 +13,13 @@ public class DeleteUserCommandHandler : IEventHandler<DeleteUserCommand, bool>
     {
         _repo = repo;
     }
-    public bool Handle(DeleteUserCommand request)
+    public async Task<bool> HandleAsync(DeleteUserCommand request)
     {
         var user=_repo.Get(request.Email);
-        if(user.IsEmpty() is true)
+        if(user.IsEmpty is true)
             return false;
         _repo.Delete(user.Email);
+        var result =await _repo.UnitOfWork.SaveChangesAsync();
         return true;
     }
 }

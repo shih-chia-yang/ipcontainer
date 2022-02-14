@@ -1,5 +1,5 @@
 
-namespace practice.api.Controllers.Applications.Commands;
+namespace practice.api.Applications.Commands;
 
 public class UpdateUserCommand:IEventRequest
 {
@@ -17,16 +17,17 @@ public class UpdateUserCommandHandler : IEventHandler<UpdateUserCommand, User>
     {
         _repo = repo;
     }
-    public User Handle(UpdateUserCommand request)
+    public async Task<User> HandleAsync(UpdateUserCommand request)
     {
         var user = _repo.Get(request.Email);
-        if(string.IsNullOrEmpty(user.Email))
+        if(user.IsEmpty is true)
             return user;
         user.UpdateEmail(request.Email);
         user.UpdatePhone(request.Phone);
         user.UpdateOrganization(request.Organization);
         user.UpdateUnit(request.Unit);
         _repo.Update(user);
+        await _repo.UnitOfWork.SaveChangesAsync();
         return user;
     }
 }

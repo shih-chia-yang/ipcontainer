@@ -1,4 +1,6 @@
-namespace practice.api.Controllers.Applications.Commands;
+using practice.domain.Kernel.Repository;
+
+namespace practice.api.Applications.Commands;
 
 public class AddUserCommand:IEventRequest
 {
@@ -15,10 +17,11 @@ public class AddUserCommandHandler : IEventHandler<AddUserCommand,User>
     {
         _repo = repo;
     }
-    public User Handle(AddUserCommand request)
+    public async Task<User> HandleAsync(AddUserCommand request)
     {
         var user = User.CreateNew(request.FirstName, request.LastName, request.Email);
         _repo.Add(user);
+        await _repo.UnitOfWork.SaveChangesAsync();
         return user;
     }
 }

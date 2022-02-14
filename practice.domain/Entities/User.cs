@@ -17,26 +17,21 @@ public class User:BaseEntity
     public string Organization { get; private set; } = string.Empty;
     public string Unit { get; private set; } = string.Empty;
 
-    protected User()
+    public bool IsEmpty => _isEmpty;
+    private bool _isEmpty;
+
+    protected User(bool isEmpty)
     {
-        
+        _isEmpty = isEmpty;
     }
 
-    internal User(string firstName, string lastName, string email)
-        => (FirstName, LastName, Email) = (firstName, lastName, email);
+    internal User(string firstName, string lastName, string email,bool isEmpty)
+        => (FirstName, LastName, Email,_isEmpty) = (firstName, lastName, email,isEmpty);
 
-    public static User CreateNew(string firstName, string lastName, string email)
-        => new User(firstName, lastName, email);
+    public static User CreateNew(string firstName, string lastName, string email,bool noUser=false)
+        => new User(firstName, lastName, email,noUser);
 
-    public static User NoUser() => new User();
-
-    public bool IsEmpty()
-        => string.IsNullOrEmpty(FirstName) &&
-        string.IsNullOrEmpty(LastName) &&
-        string.IsNullOrEmpty(Email) &&
-        string.IsNullOrEmpty(Phone) &&
-        string.IsNullOrEmpty(Organization) &&
-        string.IsNullOrEmpty(Unit);
+    public static User NoUser() => new User(true);
 
     public void UpdateEmail(string email)
         =>Email = email;

@@ -9,5 +9,5 @@ where TRequest:IEventRequest
 public interface IEventHandler<TRequest,TResponse>
 where TRequest:IEventRequest
 {
-     TResponse Handle(TRequest request);
+     Task<TResponse> HandleAsync(TRequest request);
 }

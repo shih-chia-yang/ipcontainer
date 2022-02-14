@@ -1,8 +1,9 @@
 using practice.domain.Entities;
+using practice.domain.Kernel.Repository;
 
 namespace practice.domain.Repositories;
 
-public interface IUserRepository
+public interface IUserRepository:IRepository
 {
     IEnumerable<User> List();
 
@@ -14,14 +15,6 @@ public interface IUserRepository
     bool Delete(string email);
 }
 
-public interface IAsyncUserRepository
+public interface IAsyncUserRepository:IGenericRepository<User>
 {
-    Task<IEnumerable<User>> ListAsync();
-
-    Task<User> GetAsync(string email);
-    Task<User> AddAsync(User entity);
-
-    Task<User> UpdateAsync(User entity);
-
-    Task<bool> DeleteAsync(string email);
 }
