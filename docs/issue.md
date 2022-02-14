@@ -33,7 +33,7 @@
     dotnet add ./practice.api package Microsoft.VisualStudio.Web.CodeGeneration.Design
     ````
 
-- [] create user endpoint
+- [x] create user endpoint
   - [x]create base entity model
     - id,status,trxdate
   - [x]create user model 
@@ -43,13 +43,13 @@
     - phone
     - organization
     - unit
-  - pull user information
-  - store user information
-  - create user table
-  - update user information
+  - [x] pull user information
+  - [x] store user information
+  - [x] create user table
+  - [x] update user information
 
-- [] database management
+- [x] database management
   - Context
-  - UOW for the Context
+  - UnitOfWork for the Context
   - Repository
   - add dbcontext in api program
