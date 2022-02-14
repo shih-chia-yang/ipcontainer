@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace practice.api.Controllers
+namespace practice.api.v1.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _repo;

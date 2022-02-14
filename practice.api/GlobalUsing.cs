@@ -5,3 +5,5 @@ global using practice.api.Applications.Commands;
 global using practice.infrastructure;
 global using practice.infrastructure.Data;
 global using practice.infrastructure.Repositories;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
