@@ -9,13 +9,13 @@ namespace practice.infrastructure.Repositories;
 public class UserRepository : IUserRepository,IAsyncUserRepository
 {
     private readonly UserContext _context;
-    private readonly ILogger _logger;
+    private readonly ILogger<UserRepository> _logger;
 
     public IUnitOfWork UnitOfWork =>_context;
 
 
     public UserRepository(UserContext context,
-    ILogger logger)
+    ILogger<UserRepository> logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger;

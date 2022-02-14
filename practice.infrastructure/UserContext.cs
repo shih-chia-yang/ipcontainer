@@ -7,15 +7,15 @@ namespace practice.infrastructure;
 
 public class UserContext:DbContext,IUnitOfWork
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<UserContext> _logger;
 
     public DbSet<User> Users { get; set; }
     public UserContext(
         DbContextOptions<UserContext> options,
-        ILoggerFactory loggerFactory)
+        ILogger<UserContext> logger)
         :base(options)
     {
-        _logger = loggerFactory.CreateLogger("db_logs");
+        _logger = logger;
     }
 
     public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)

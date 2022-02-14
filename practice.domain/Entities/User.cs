@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace practice.domain.Entities;
 
 /// <summary>
@@ -17,8 +19,14 @@ public class User:BaseEntity
     public string Organization { get; private set; } = string.Empty;
     public string Unit { get; private set; } = string.Empty;
 
+    [NotMapped]
     public bool IsEmpty => _isEmpty;
     private bool _isEmpty;
+
+    protected User()
+    {
+        
+    }
 
     protected User(bool isEmpty)
     {
