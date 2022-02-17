@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace practice.api.v1.Controllers
 {
-    [Route("api/v{version:apiVersion}")]
+    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    [Route("api/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
     public class UserController : ControllerBase
-    {
+{
         private readonly IUserRepository _repo;
         private readonly IEventHandler<AddUserCommand,User> _addHandler;
         private readonly IEventHandler<UpdateUserCommand, User> _updateHandler;
@@ -28,6 +31,7 @@ namespace practice.api.v1.Controllers
             _deleteHandler = deleteHandler;
         }
 
+        [AllowAnonymous]
         [Route("users")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<User>),StatusCodes.Status200OK)]
