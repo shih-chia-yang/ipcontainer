@@ -17,7 +17,7 @@ public class AddUserCommandHandler : IEventHandler<AddUserCommand,User>
     {
         _repo = repo;
     }
-    public async Task<User> HandleAsync(AddUserCommand request)
+    public async Task<User> Handle(AddUserCommand request)
     {
         var user = User.CreateNew(request.FirstName, request.LastName, request.Email);
         _repo.Add(user);

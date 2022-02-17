@@ -35,7 +35,7 @@ namespace practice.api.Controllers
 
         [Route("register")]
         [HttpPost]
-        public IActionResult Register([FromBody] UserRegistration request)
+        public async Task<IActionResult> RegisterAsync([FromBody] UserRegistration request)
         {
             //check the model filed we are recicing is valid
             var validator = new UserRegistrationValidator(request);
@@ -59,7 +59,7 @@ namespace practice.api.Controllers
                     LastName=request.LastName,
                     Email=request.Email
                 };
-                var newUser=_addUser.Handle(addUserCommand);
+                var newUser=await _addUser.Handle(addUserCommand);
                 //create a jwt token
                 var token = GererateJwtToken(newUser);
                 //return back to the user

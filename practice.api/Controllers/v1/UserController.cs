@@ -46,7 +46,7 @@ namespace practice.api.v1.Controllers
         [ProducesResponseType(typeof(User),StatusCodes.Status201Created)]
         public IActionResult Add([FromBody]AddUserCommand command)
         {
-            var user = _addHandler.HandleAsync(command);
+            var user = _addHandler.Handle(command);
             return Ok(user);
         }
 
@@ -55,7 +55,7 @@ namespace practice.api.v1.Controllers
         [ProducesResponseType(typeof(User),StatusCodes.Status202Accepted)]
         public IActionResult Update([FromBody]UpdateUserCommand command)
         {
-            var updateUser = _updateHandler.HandleAsync(command);
+            var updateUser = _updateHandler.Handle(command);
             return Ok(updateUser);
         }
 
@@ -64,7 +64,7 @@ namespace practice.api.v1.Controllers
         [ProducesResponseType(typeof(bool),StatusCodes.Status202Accepted)]
         public IActionResult Delete([FromQuery]DeleteUserCommand command)
         {
-            var succeeded = _deleteHandler.HandleAsync(command);
+            var succeeded = _deleteHandler.Handle(command);
             return Ok(succeeded);
         }
     }

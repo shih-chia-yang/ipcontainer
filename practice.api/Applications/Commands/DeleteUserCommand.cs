@@ -13,7 +13,7 @@ public class DeleteUserCommandHandler : IEventHandler<DeleteUserCommand, bool>
     {
         _repo = repo;
     }
-    public async Task<bool> HandleAsync(DeleteUserCommand request)
+    public async Task<bool> Handle(DeleteUserCommand request)
     {
         var user=_repo.Get(request.Email);
         if(user.IsEmpty is true)

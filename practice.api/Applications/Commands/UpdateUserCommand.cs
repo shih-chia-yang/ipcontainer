@@ -17,7 +17,7 @@ public class UpdateUserCommandHandler : IEventHandler<UpdateUserCommand, User>
     {
         _repo = repo;
     }
-    public async Task<User> HandleAsync(UpdateUserCommand request)
+    public async Task<User> Handle(UpdateUserCommand request)
     {
         var user = _repo.Get(request.Email);
         if(user.IsEmpty is true)
