@@ -1,3 +1,4 @@
+using practice.domain.Kernel.Command;
 using practice.domain.Kernel.Repository;
 
 namespace practice.api.Applications.Commands;
@@ -9,7 +10,7 @@ public class AddUserCommand:IEventRequest
     public string Email { get; set; } = string.Empty;
 }
 
-public class AddUserCommandHandler : IEventHandler<AddUserCommand,User>
+public class AddUserCommandHandler : IRequestHandler<AddUserCommand>
 {
     private readonly IUserRepository _repo;
 
@@ -17,11 +18,11 @@ public class AddUserCommandHandler : IEventHandler<AddUserCommand,User>
     {
         _repo = repo;
     }
-    public async Task<User> Handle(AddUserCommand request)
+    public async Task<IResponse> Handle(AddUserCommand request)
     {
         var user = User.CreateNew(request.FirstName, request.LastName, request.Email);
         _repo.Add(user);
-        await _repo.UnitOfWork.SaveChangesAsync();
-        return user;
+        var exec=await _repo.UnitOfWork.SaveChangesAsync();
+        return new CommandResponse(exec>0?true:false,user,null);
     }
 }

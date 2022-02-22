@@ -12,25 +12,30 @@ using Microsoft.IdentityModel.Tokens;
 using practice.api.Applications.Contract;
 using practice.api.Applications.Validators;
 using practice.api.Configuration.Models;
+using practice.api.Models.Dto;
 
-namespace practice.api.Controllers
+namespace practice.api.v2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
         private readonly IUserRepository _repo;
-        private readonly IOptions<JwtConfig> _config;
-        private readonly IEventHandler<AddUserCommand, User> _addUser;
+        private readonly JwtConfig _config;
+        private readonly IEventBus _eventBus;
+        // private readonly IEventHandler<AddUserCommand, User> _addUser;
 
         public AccountController(
             IUserRepository repo,
             IOptions<JwtConfig> config,
-            IEventHandler<AddUserCommand,User> addUser)
+            IEventBus eventBus
+            // IEventHandler<AddUserCommand,User> addUser
+            )
         {
             _repo = repo;
-            _config = config;
-            _addUser = addUser;
+            _config = config.Value;
+            _eventBus = eventBus;
+            // _addUser = addUser;
         }
 
         [Route("register")]
@@ -46,8 +51,8 @@ namespace practice.api.Controllers
                 if(string.IsNullOrEmpty(userExist.Email)==false)
                 {
                     return BadRequest(
-                        new {Success=false,
-                        Error=new List<string>(){
+                        new AuthResult{Success=false,
+                        Errors=new List<string>(){
                         "Email already in use"
                         },
                         Token=string.Empty});
@@ -59,20 +64,21 @@ namespace practice.api.Controllers
                     LastName=request.LastName,
                     Email=request.Email
                 };
-                var newUser=await _addUser.Handle(addUserCommand);
+                // var newUser=await _addUser.Handle(addUserCommand);
+                var result =await _eventBus.Send(addUserCommand);
                 //create a jwt token
-                var token = GererateJwtToken(newUser);
+                var token = GererateJwtToken(result.Value as User);
                 //return back to the user
-                return Ok(new{
+                return Ok(new AuthResult{
                     Success=true,
                     Token=token
                 });
             }
             else
             {
-                return BadRequest(new {
+                return BadRequest(new AuthResult{
                     Success=false,
-                    Error=new List<string>(){
+                    Errors=new List<string>(){
                         "Invalid payload"
                     },
                     Token=string.Empty
@@ -85,8 +91,7 @@ namespace practice.api.Controllers
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             // get the security key
-            var key = Encoding.UTF8.GetBytes(_config.Value.Secret);
-
+            var key = Encoding.UTF8.GetBytes(_config.Secret);
             var tokenDescripter = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -98,7 +103,7 @@ namespace practice.api.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                     }
                 ),
-                Expires=DateTime.UtcNow.AddMinutes(15), // todo update the expiration
+                Expires=DateTime.UtcNow.Add(TimeSpan.FromTicks(_config.ExpiryTimeFrame)), // todo update the expiration
                 SigningCredentials=new SigningCredentials(
                     new SymmetricSecurityKey(key),SecurityAlgorithms.HmacSha256Signature) // todo review the algorithm
             };

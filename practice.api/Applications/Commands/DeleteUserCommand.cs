@@ -1,3 +1,5 @@
+using practice.domain.Kernel.Command;
+
 namespace practice.api.Applications.Commands;
 
 public class DeleteUserCommand:IEventRequest
@@ -5,7 +7,7 @@ public class DeleteUserCommand:IEventRequest
     public string Email { get; set; } = string.Empty;
 }
 
-public class DeleteUserCommandHandler : IEventHandler<DeleteUserCommand, bool>
+public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
 {
     private readonly IUserRepository _repo;
 
@@ -13,13 +15,13 @@ public class DeleteUserCommandHandler : IEventHandler<DeleteUserCommand, bool>
     {
         _repo = repo;
     }
-    public async Task<bool> Handle(DeleteUserCommand request)
+    public async Task<IResponse> Handle(DeleteUserCommand request)
     {
         var user=_repo.Get(request.Email);
         if(user.IsEmpty is true)
-            return false;
+            return new CommandResponse(false,user,null);
         _repo.Delete(user.Email);
         var result =await _repo.UnitOfWork.SaveChangesAsync();
-        return true;
+        return new CommandResponse(true,user,null);
     }
 }

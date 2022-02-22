@@ -1,6 +1,6 @@
 namespace practice.domain.Kernel.Events;
 
-public interface IEventRequest
+public interface INotification
 {
-
+    
 }

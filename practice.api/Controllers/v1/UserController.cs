@@ -9,26 +9,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace practice.api.v1.Controllers
 {
-    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
-    [Route("api/[controller]")]
+    // [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    [Route("api/")]
     [ApiController]
     [ApiVersion("1.0")]
     public class UserController : ControllerBase
 {
         private readonly IUserRepository _repo;
-        private readonly IEventHandler<AddUserCommand,User> _addHandler;
-        private readonly IEventHandler<UpdateUserCommand, User> _updateHandler;
-        private readonly IEventHandler<DeleteUserCommand, bool> _deleteHandler;
+        private readonly IEventBus _eventBus;
 
-        public UserController(IUserRepository repo,
-        IEventHandler<AddUserCommand, User> addHandler,
-        IEventHandler<UpdateUserCommand, User> updateHandler
-        , IEventHandler<DeleteUserCommand, bool> deleteHandler)
+        public UserController(
+            IUserRepository repo,
+            IEventBus eventBus)
         {
             _repo = repo;
-            _addHandler = addHandler;
-            _updateHandler = updateHandler;
-            _deleteHandler = deleteHandler;
+            _eventBus = eventBus;
         }
 
         [AllowAnonymous]
@@ -44,28 +39,38 @@ namespace practice.api.v1.Controllers
         [Route("user")]
         [HttpPost]
         [ProducesResponseType(typeof(User),StatusCodes.Status201Created)]
-        public IActionResult Add([FromBody]AddUserCommand command)
+        [ProducesResponseType(typeof(List<string>),StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddAsync([FromBody]AddUserCommand command)
         {
-            var user = _addHandler.Handle(command);
-            return Ok(user);
+            var result =await _eventBus.Send(command);
+            if(result.Success is true)
+                return Ok(result.Value);
+            else
+                return BadRequest(result.Errors);
         }
 
         [Route("user")]
         [HttpPut]
         [ProducesResponseType(typeof(User),StatusCodes.Status202Accepted)]
-        public IActionResult Update([FromBody]UpdateUserCommand command)
+        public async Task<IActionResult> UpdateAsync([FromBody]UpdateUserCommand command)
         {
-            var updateUser = _updateHandler.Handle(command);
-            return Ok(updateUser);
+            var result =await _eventBus.Send(command);
+            if(result.Success is true)
+                return Ok(result);
+            else
+                return BadRequest(result);
         }
 
         [Route("user")]
         [HttpDelete]
         [ProducesResponseType(typeof(bool),StatusCodes.Status202Accepted)]
-        public IActionResult Delete([FromQuery]DeleteUserCommand command)
+        public async Task<IActionResult> DeleteAsync([FromQuery]DeleteUserCommand command)
         {
-            var succeeded = _deleteHandler.Handle(command);
-            return Ok(succeeded);
+            var result =await _eventBus.Send(command);
+            if(result.Success is true)
+                return Ok(result);
+            else
+                return BadRequest(result);
         }
     }
 }

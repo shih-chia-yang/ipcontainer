@@ -1,4 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using practice.domain.Kernel.Domain;
+using practice.domain.Events;
 
 namespace practice.domain.Entities;
 
@@ -19,6 +22,12 @@ public class User:BaseEntity
     public string Organization { get; private set; } = string.Empty;
     public string Unit { get; private set; } = string.Empty;
 
+    [JsonIgnore]
+    public string PasswordHash { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public List<RefreshToken> RefreshTokens { get; set; }
+
     [NotMapped]
     public bool IsEmpty => _isEmpty;
     private bool _isEmpty;
@@ -33,13 +42,19 @@ public class User:BaseEntity
         _isEmpty = isEmpty;
     }
 
-    internal User(string firstName, string lastName, string email,bool isEmpty)
-        => (FirstName, LastName, Email,_isEmpty) = (firstName, lastName, email,isEmpty);
+    internal User(string firstName, string lastName, string email)
+        => (FirstName, LastName, Email,_isEmpty) = (firstName, lastName, email,false);
 
-    public static User CreateNew(string firstName, string lastName, string email,bool noUser=false)
-        => new User(firstName, lastName, email,noUser);
+    public static User CreateNew(string firstName, string lastName, string email)
+        => new User(firstName, lastName, email);
 
     public static User NoUser() => new User(true);
+
+    public void Register(string firstName,string lastName,string email,string password)
+    {
+        if(IsEmpty)
+            AddEvent(new RegisteredDomainEvent(firstName, lastName, email, password));
+    }
 
     public void UpdateEmail(string email)
         =>Email = email;

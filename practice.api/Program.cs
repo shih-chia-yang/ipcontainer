@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using practice.api.Configuration.Models;
+using practice.domain.Kernel;
+using practice.domain.Kernel.Command;
 
 var builder = WebApplication.CreateBuilder(args);
 var configureOptions = builder.Configuration.GetSection(nameof(JwtConfig));
@@ -14,14 +16,9 @@ var jwtConfig = new JwtConfig();
 configureOptions.Bind(jwtConfig);
 // Add services to the container.
 builder.Services.AddDbContext<UserContext>(options=>options.UseInMemoryDatabase("identity_app"));
-builder.Services.AddAuthentication(options=>{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options=>
-{
-    var key = Encoding.UTF8.GetBytes(jwtConfig.Secret);
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
+
+var key = Encoding.UTF8.GetBytes(jwtConfig.Secret);
+var tokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = false, //todo update
         // ValidIssuer = "",
@@ -31,7 +28,16 @@ builder.Services.AddAuthentication(options=>{
         ValidateLifetime=true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-};
+    };
+builder.Services.AddSingleton(tokenValidationParameters);
+
+builder.Services.AddAuthentication(options=>{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options=>
+{
+    options.SaveToken = true;
+    options.TokenValidationParameters = tokenValidationParameters;
 });
 
 
@@ -60,9 +66,12 @@ builder.Services.AddApiVersioning(options=>{
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IEventHandler<AddUserCommand, User>, AddUserCommandHandler>();
-builder.Services.AddTransient<IEventHandler<UpdateUserCommand, User>, UpdateUserCommandHandler>();
-builder.Services.AddTransient<IEventHandler<DeleteUserCommand, bool>, DeleteUserCommandHandler>();
+builder.Services.AddTransient<IRequestHandler<AddUserCommand>, AddUserCommandHandler>();
+builder.Services.AddTransient<IRequestHandler<UpdateUserCommand>, UpdateUserCommandHandler>();
+builder.Services.AddTransient<IRequestHandler<DeleteUserCommand>, DeleteUserCommandHandler>();
+builder.Services.AddSingleton<IDispatcher, EventDispatcher>();
+builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
+builder.Services.AddSingleton<IEventBus, EventBus>();
 
 var app = builder.Build();
 
