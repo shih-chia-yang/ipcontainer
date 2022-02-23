@@ -12,7 +12,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/practice.api/practice.api.csproj",
+                "${workspaceFolder}/src/Services/Identity/practice.api/practice.api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -24,7 +24,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/practice.domain/practice.doamin.csproj",
+                "${workspaceFolder}/src/Services/Identity/practice.domain/practice.doamin.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -36,7 +36,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/practice.infrastructure/practice.infrastructure.csproj",
+                "${workspaceFolder}/src/Services/Identity/practice.infrastructure/practice.infrastructure.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -48,7 +48,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/practice.api/practice.api.csproj",
+                "${workspaceFolder}/src/Services/Identity/practice.api/practice.api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -62,7 +62,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/practice.api/practice.api.csproj"
+                "${workspaceFolder}/src/Services/Identity/practice.api/practice.api.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
