@@ -86,7 +86,7 @@ public class UserRepository : IUserRepository,IAsyncUserRepository
     public User Update(User entity)
     {
         var user = Get(entity.Email);
-        if(string.IsNullOrEmpty(user.Email)==false)
+        if(user.IsEmpty is false)
         {
             _context.Update(user);
             return user;

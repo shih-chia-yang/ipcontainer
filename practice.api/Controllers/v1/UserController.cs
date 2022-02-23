@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace practice.api.v1.Controllers
 {
-    // [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
-    [Route("api/")]
+    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    [Route("api/v{version:apiVersion}")]
     [ApiController]
     [ApiVersion("1.0")]
     public class UserController : ControllerBase

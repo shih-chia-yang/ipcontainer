@@ -29,18 +29,59 @@ namespace practice.api.v2.Controllers
             IUserRepository repo,
             IOptions<JwtConfig> config,
             IEventBus eventBus
-            // IEventHandler<AddUserCommand,User> addUser
             )
         {
             _repo = repo;
             _config = config.Value;
             _eventBus = eventBus;
-            // _addUser = addUser;
+        }
+
+        [Route("login")]
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody]UserLogin request)
+        {
+            var validator = new UserLoginValidator(request);
+            if(validator.IsValid is false)
+            {
+                return BadRequest(new AuthResult
+                {   
+                    Token=string.Empty,
+                    Success=false,
+                    Errors=new List<string>()
+                    {
+                        "invalid payload"
+                    }
+                });
+            }
+            var user = _repo.Get(request.Email);
+            if(user.IsEmpty is true)
+                    return BadRequest(new AuthResult
+                {   
+                    Token=string.Empty,
+                    Success=false,
+                    Errors=new List<string>()
+                    {
+                        "invalid authentication request"
+                    }
+                });
+
+            if(user.PasswordHash != request.Password)
+                return BadRequest(new AuthResult
+                {   
+                    Token=string.Empty,
+                    Success=false,
+                    Errors=new List<string>()
+                    {
+                        "invalid authentication request"
+                    }
+                });
+            var jwtToken = await GererateJwtToken(user);
+            return Ok(jwtToken);
         }
 
         [Route("register")]
         [HttpPost]
-        public async Task<IActionResult> RegisterAsync([FromBody] UserRegistration request)
+        public async Task<IActionResult> Register([FromBody] UserRegistration request)
         {
             //check the model filed we are recicing is valid
             var validator = new UserRegistrationValidator(request);
@@ -58,21 +99,21 @@ namespace practice.api.v2.Controllers
                         Token=string.Empty});
                 }
                 // add user
-                var addUserCommand = new AddUserCommand
+                // var newUser=await _addUser.Handle(addUserCommand);
+                var result =await _eventBus.Send(new AddUserCommand
                 {
                     FirstName=request.FirstName,
                     LastName=request.LastName,
-                    Email=request.Email
-                };
-                // var newUser=await _addUser.Handle(addUserCommand);
-                var result =await _eventBus.Send(addUserCommand);
-                //create a jwt token
-                var token = GererateJwtToken(result.Value as User);
-                //return back to the user
-                return Ok(new AuthResult{
-                    Success=true,
-                    Token=token
+                    Email=request.Email,
+                    Password=request.Password
                 });
+                var newUser = result.Value as User;
+                //create a jwt token
+                var token = await GererateJwtToken(newUser);
+                
+                
+                //return back to the user
+                return Ok(token);
             }
             else
             {
@@ -87,7 +128,7 @@ namespace practice.api.v2.Controllers
             
         }
 
-        private string GererateJwtToken(User user)
+        private async Task<AuthResult> GererateJwtToken(User user)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             // get the security key
@@ -103,6 +144,7 @@ namespace practice.api.v2.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                     }
                 ),
+                NotBefore=DateTime.UtcNow,
                 Expires=DateTime.UtcNow.Add(TimeSpan.FromTicks(_config.ExpiryTimeFrame)), // todo update the expiration
                 SigningCredentials=new SigningCredentials(
                     new SymmetricSecurityKey(key),SecurityAlgorithms.HmacSha256Signature) // todo review the algorithm
@@ -111,8 +153,33 @@ namespace practice.api.v2.Controllers
             var token = jwtHandler.CreateToken(tokenDescripter);
             // convert the security obj token into a string
             var jwtToken = jwtHandler.WriteToken(token);
+            // Generate a refresh token
+            var refreshToken = new RefreshToken
+                {
+                    Created = DateTime.UtcNow,
+                    Token = GenerateRandomString(25), //create a method to generate a random string and attach a certain guid
+                    UserId = user.Id.ToString(),
+                    IsRevoked = false,
+                    IsActive = false,
+                    JwtId=token.Id,
+                    Expires=DateTime.UtcNow.AddMonths(6),
+                };
+            user.AddRefreshToken(refreshToken);
+            _repo.Update(user);
+            await _repo.UnitOfWork.SaveChangesAsync();
+            return new AuthResult
+            {
+                Token = jwtToken,
+                Success = true,
+                RefreshToken=refreshToken.Token,
+            };
+        }
 
-            return jwtToken;
+        private string GenerateRandomString(int length)
+        {
+            var random = new Random();
+            var chars = "ABCEDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklknopqrstuvwxyz0123456789";
+            return new string(Enumerable.Repeat(chars, length).Select(x=>x[random.Next(x.Length)]).ToArray());
         }
     }
 }

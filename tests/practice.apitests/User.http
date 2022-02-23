@@ -1,0 +1,59 @@
+@baseUrl = https://localhost:7111
+
+###
+
+# @name users
+get {{baseUrl}}/api/v1/users HTTP/1.1
+
+###
+
+###
+
+# @name login
+post {{baseUrl}}/api/Account/Login HTTP/1.1
+Content-Type: application/json
+
+{
+  "Email":"andy@test.com",
+  "Password":"andy"
+}
+
+###
+
+@authToken = {{login.response.body.$.token}}
+
+# @name addUser
+post {{baseUrl}}/api/v1/user HTTP/1.1
+Authorization:Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "FirstName": "yc",
+  "LastName": "lo",
+  "Email":"loyc@yuntech.edu.tw",
+  "Password":"123456"
+}
+
+###
+
+# @name updateUser
+put {{baseUrl}}/api/v1/user HTTP/1.1
+Authorization:Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "Email": "loyc@yuntech.edu.tw",
+  "Phone": "055342601",
+  "Organization":"yuntech",
+  "Unit":"heip"
+}
+
+###
+
+@email=loyc@yuntech.edu.tw
+
+# @name deleteUser
+DELETE {{baseUrl}}/api/v1/user?Email={{email}} HTTP/1.1
+Authorization:Bearer {{authToken}}
+
+

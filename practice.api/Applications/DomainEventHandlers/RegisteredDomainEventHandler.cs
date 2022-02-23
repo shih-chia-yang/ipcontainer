@@ -5,10 +5,13 @@ namespace practice.api.Applications.DomainEventHandlers;
 public class RegisteredDomainEventHandler : IIntegrationEventHandler<RegisteredDomainEvent>
 {
     private readonly UserRepository _repo;
+    private readonly IEventBus _eventBus;
 
-    public RegisteredDomainEventHandler(UserRepository repo)
+    public RegisteredDomainEventHandler(UserRepository repo,
+    IEventBus eventBus)
     {
         _repo=repo;
+        _eventBus = eventBus;
     }
 
     public async Task Handle(RegisteredDomainEvent request)
@@ -18,8 +21,11 @@ public class RegisteredDomainEventHandler : IIntegrationEventHandler<RegisteredD
         {
             // return this email already in use"
         }
-        var newUser = User.CreateNew(request.FirstName, request.LastName, request.Email);
-        _repo.Add(newUser);
-        var count = await _repo.UnitOfWork.SaveChangesAsync();
+        var result = await _eventBus.Send(new AddUserCommand
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email
+        });
     }
 }

@@ -1,27 +1,7 @@
 using practice.api.Applications.Contract;
+using practice.domain.Kernel.Validator;
 
 namespace practice.api.Applications.Validators;
-
-public interface IValidator<TEntity>
-where TEntity:class
-{
-    bool IsValid{ get; }
-}
-
-public abstract class AbstractValidator<TEntity> : IValidator<TEntity>
-where TEntity:class
-{
-    protected readonly TEntity? _entity;
-
-    protected AbstractValidator(TEntity entity)
-    {
-        _entity = entity;
-    }
-
-    public bool IsValid => Valid();
-
-    protected abstract bool Valid();
-}
 
 public class UserRegistrationValidator : AbstractValidator<UserRegistration>
 {

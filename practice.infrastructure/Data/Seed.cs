@@ -12,9 +12,9 @@ public static class DbInitials
             await context.AddRangeAsync(
                 new List<User>()
                 {
-                    User.CreateNew("andy","wang","andy@test.com"),
-                    User.CreateNew("bod","chen","bob@test.com"),
-                    User.CreateNew("carol","chang","carol@test.com")
+                    User.CreateNew("andy","wang","andy@test.com","andy"),
+                    User.CreateNew("bod","chen","bob@test.com","bod"),
+                    User.CreateNew("carol","chang","carol@test.com","carol")
                 }
             );
         }

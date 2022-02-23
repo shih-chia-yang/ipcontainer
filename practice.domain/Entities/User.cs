@@ -26,7 +26,9 @@ public class User:BaseEntity
     public string PasswordHash { get; set; } = string.Empty;
 
     [JsonIgnore]
-    public List<RefreshToken> RefreshTokens { get; set; }
+    public IEnumerable<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+
+    private List<RefreshToken> _refreshTokens = new();
 
     [NotMapped]
     public bool IsEmpty => _isEmpty;
@@ -34,7 +36,7 @@ public class User:BaseEntity
 
     protected User()
     {
-        
+        // _refreshTokens=new();
     }
 
     protected User(bool isEmpty)
@@ -42,11 +44,11 @@ public class User:BaseEntity
         _isEmpty = isEmpty;
     }
 
-    internal User(string firstName, string lastName, string email)
-        => (FirstName, LastName, Email,_isEmpty) = (firstName, lastName, email,false);
+    internal User(string firstName, string lastName, string email,string password):base()
+        => (FirstName, LastName, Email,PasswordHash,_isEmpty) = (firstName, lastName, email,password,false);
 
-    public static User CreateNew(string firstName, string lastName, string email)
-        => new User(firstName, lastName, email);
+    public static User CreateNew(string firstName, string lastName, string email,string password)
+        => new User(firstName, lastName, email,password);
 
     public static User NoUser() => new User(true);
 
@@ -55,6 +57,9 @@ public class User:BaseEntity
         if(IsEmpty)
             AddEvent(new RegisteredDomainEvent(firstName, lastName, email, password));
     }
+
+    public void AddRefreshToken(RefreshToken token)
+        => _refreshTokens.Add(token);
 
     public void UpdateEmail(string email)
         =>Email = email;
