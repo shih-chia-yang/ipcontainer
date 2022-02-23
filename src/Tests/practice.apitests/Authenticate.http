@@ -1,0 +1,40 @@
+@baseUrl = https://localhost:7111
+
+###
+
+# @name register
+post {{baseUrl}}/api/Account/Register HTTP/1.1
+Content-Type: application/json
+
+{
+  "FirstName": "chiayang",
+  "LastName": "shih",
+  "Email":"chiayang@yuntech.edu.tw",
+  "Password":"123456"
+}
+
+###
+
+# @name login
+post {{baseUrl}}/api/Account/Login HTTP/1.1
+Content-Type: application/json
+
+{
+  "Email":"chiayang@yuntech.edu.tw",
+  "Password":"123456"
+}
+
+
+###
+@authToken = {{login.response.body.$.token}}
+@refreshToken = {{login.response.body.$.refreshToken}}
+
+# @name refreshtoken
+post {{baseUrl}}/api/Account/RefreshToken HTTP/1.1
+Authorization:Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "Token":"{{authToken}}",
+  "RefreshToken":"{{refreshToken}}"
+}
