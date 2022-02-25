@@ -11,10 +11,14 @@ public class UpdateUserCommand:IEventRequest
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand>
 {
     private readonly IUserRepository _repo;
+    private readonly IMapper _mapper;
 
-    public UpdateUserCommandHandler(IUserRepository repo)
+    public UpdateUserCommandHandler(
+        IUserRepository repo,
+        IMapper mapper)
     {
         _repo = repo;
+        _mapper = mapper;
     }
     public async Task<IResponse> Handle(UpdateUserCommand request)
     {
@@ -27,6 +31,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand>
         user.UpdateUnit(request.Unit);
         _repo.Update(user);
         await _repo.UnitOfWork.SaveChangesAsync();
-        return new CommandResponse(true,user,Enumerable.Empty<string>());
+        var result = _mapper.Map<UserProfileViewModel>(user);
+        return new CommandResponse(true,result,Enumerable.Empty<string>());
     }
 }

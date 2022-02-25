@@ -1,5 +1,4 @@
 using practice.domain.Kernel.Events;
-
 namespace practice.domain.Events;
 
 public class RegisteredDomainEvent:INotification

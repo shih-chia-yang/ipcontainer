@@ -155,7 +155,7 @@ namespace practice.api.v2.Controllers
 
             // check token is valid
             var result =await VerifyTokenAsync(tokenRequest);
-            if(result is null)
+            if(result.Success is false)
                 return BadRequest(new AuthResult()
                 {
                     Success=false,
@@ -291,7 +291,14 @@ namespace practice.api.v2.Controllers
                 // _logger.LogError(ex, $"{typeof()}");
                 // todo: add better error handling, and add log
                 Console.WriteLine(ex.Message);
-                return null;
+                return new AuthResult()
+                {
+                    Success=false,
+                    Errors=new List<string>()
+                    {
+                        ex.Message
+                    }
+                };
             }            
         }
 

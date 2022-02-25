@@ -11,10 +11,17 @@ public class AddUserCommand:IEventRequest
 public class AddUserCommandHandler : IRequestHandler<AddUserCommand>
 {
     private readonly IUserRepository _repo;
+    private readonly IMapper _mapper;
+    private readonly ILogger<AddUserCommand> _logger;
 
-    public AddUserCommandHandler(IUserRepository repo)
+    public AddUserCommandHandler(
+        IUserRepository repo,
+        IMapper mapper,
+        ILogger<AddUserCommand> logger)
     {
         _repo = repo;
+        _mapper = mapper;
+        _logger = logger;
     }
     public async Task<IResponse> Handle(AddUserCommand request)
     {
@@ -22,8 +29,10 @@ public class AddUserCommandHandler : IRequestHandler<AddUserCommand>
         if(userExist)
             return new CommandResponse(false, userExist,new string[]{"this email already exist"});
         var newUser = User.CreateNew(request.FirstName, request.LastName, request.Email,request.Password);
+        _logger.LogInformation($"{request.FirstName} {request.LastName} registered");
         _repo.Add(newUser);
         var exec=await _repo.UnitOfWork.SaveChangesAsync();
-        return new CommandResponse(exec>0?true:false,newUser,null);
+         var result = this._mapper.Map<UserProfileViewModel>(newUser);
+        return new CommandResponse(exec>0?true:false,result,Enumerable.Empty<string>());
     }
 }

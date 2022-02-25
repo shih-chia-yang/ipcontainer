@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace practice.api.v1.Controllers
 {
     [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
@@ -17,28 +18,32 @@ namespace practice.api.v1.Controllers
 {
         private readonly IUserRepository _repo;
         private readonly IEventBus _eventBus;
+        private readonly IMapper _mapper;
 
         public UserController(
             IUserRepository repo,
-            IEventBus eventBus)
+            IEventBus eventBus,
+            IMapper mapper)
         {
             _repo = repo;
             _eventBus = eventBus;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
         [Route("users")]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<User>),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<UserProfileViewModel>),StatusCodes.Status200OK)]
         public IActionResult GetUsers()
         {
             var users = _repo.List().Where(x=>x.Status==1).ToList();
-            return Ok(users);
+            var viewModels=_mapper.Map<IEnumerable<UserProfileViewModel>>(users);
+            return Ok(viewModels);
         }
 
         [Route("user")]
         [HttpPost]
-        [ProducesResponseType(typeof(User),StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(UserProfileViewModel),StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<string>),StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddAsync([FromBody]AddUserCommand command)
         {
@@ -46,12 +51,17 @@ namespace practice.api.v1.Controllers
             if(result.Success is true)
                 return Ok(result.Value);
             else
-                return BadRequest(result.Errors);
+            {
+                var response = new Response<UserProfileViewModel>
+                    (ResponseError.CreateNew(400,"",nameof(BadRequest)));
+
+                return BadRequest(response);
+            }
         }
 
         [Route("user")]
         [HttpPut]
-        [ProducesResponseType(typeof(User),StatusCodes.Status202Accepted)]
+        [ProducesResponseType(typeof(UserProfileViewModel),StatusCodes.Status202Accepted)]
         public async Task<IActionResult> UpdateAsync([FromBody]UpdateUserCommand command)
         {
             var result =await _eventBus.Send(command);

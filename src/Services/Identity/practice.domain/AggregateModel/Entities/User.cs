@@ -45,7 +45,14 @@ public class User:BaseEntity
     }
 
     internal User(string firstName, string lastName, string email,string password):base()
-        => (FirstName, LastName, Email,PasswordHash,_isEmpty) = (firstName, lastName, email,password,false);
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        PasswordHash = password;
+        _isEmpty = false;
+        AddEvent(new RegisteredDomainEvent(firstName,lastName,email,password));
+    }
 
     public static User CreateNew(string firstName, string lastName, string email,string password)
         => new User(firstName, lastName, email,password);

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using practice.api.Configuration.Models;
 using practice.domain.Kernel;
-using practice.domain.Kernel.Command;
 
 var builder = WebApplication.CreateBuilder(args);
 var configureOptions = builder.Configuration.GetSection(nameof(JwtConfig));
@@ -64,6 +63,8 @@ builder.Services.AddApiVersioning(options=>{
 
 });
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
