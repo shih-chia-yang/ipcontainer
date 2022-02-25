@@ -32,7 +32,7 @@ public class AddUserCommandHandler : IRequestHandler<AddUserCommand>
         _logger.LogInformation($"{request.FirstName} {request.LastName} registered");
         _repo.Add(newUser);
         var exec=await _repo.UnitOfWork.SaveChangesAsync();
-         var result = this._mapper.Map<UserProfileViewModel>(newUser);
+        var result = this._mapper.Map<UserProfileViewModel>(newUser);
         return new CommandResponse(exec>0?true:false,result,Enumerable.Empty<string>());
     }
 }

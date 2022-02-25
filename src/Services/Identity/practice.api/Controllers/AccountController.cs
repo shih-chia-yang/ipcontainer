@@ -25,6 +25,7 @@ namespace practice.api.v2.Controllers
         private readonly JwtConfig _config;
         private readonly IEventBus _eventBus;
         private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly IMapper _mapper;
 
         // private readonly IEventHandler<AddUserCommand, User> _addUser;
 
@@ -34,7 +35,8 @@ namespace practice.api.v2.Controllers
             IRefreshTokenRepository refreshTokenRepo,
             IOptions<JwtConfig> config,
             TokenValidationParameters tokenValidationParameters,
-            IEventBus eventBus
+            IEventBus eventBus,
+            IMapper mapper
             )
         {
             _logger = logger;
@@ -43,8 +45,13 @@ namespace practice.api.v2.Controllers
             _config = config.Value;
             _eventBus = eventBus;
             _tokenValidationParameters = tokenValidationParameters;
+            _mapper = mapper;
         }
-
+        /// <summary>
+        /// 登入
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [Route("login")]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody]UserLogin request)
@@ -84,7 +91,8 @@ namespace practice.api.v2.Controllers
                         "invalid authentication request"
                     }
                 });
-            var jwtToken = await GererateJwtToken(user);
+            var userViewModel=_mapper.Map<UserProfileViewModel>(user);
+            var jwtToken = await GererateJwtToken(userViewModel);
             return Ok(jwtToken);
         }
 
@@ -116,7 +124,7 @@ namespace practice.api.v2.Controllers
                     Email=request.Email,
                     Password=request.Password
                 });
-                var newUser = result.Value as User;
+                var newUser = result.Value as UserProfileViewModel;
                 //create a jwt token
                 var token = await GererateJwtToken(newUser);
                 
@@ -268,7 +276,8 @@ namespace practice.api.v2.Controllers
                                     "Error processing request"
                                 }
                             };
-                        var tokens = await GererateJwtToken(user);
+                        var userViewModel=_mapper.Map<UserProfileViewModel>(user);
+                        var tokens = await GererateJwtToken(userViewModel);
                         return new AuthResult()
                         {
                             Success = true,
@@ -310,7 +319,7 @@ namespace practice.api.v2.Controllers
             return dateTime.AddSeconds(utcExpiryDate).ToUniversalTime();
         }
 
-        private async Task<AuthResult> GererateJwtToken(User user)
+        private async Task<AuthResult> GererateJwtToken(UserProfileViewModel user)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             // get the security key

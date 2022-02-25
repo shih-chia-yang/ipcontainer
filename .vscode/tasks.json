@@ -3,7 +3,11 @@
     "tasks": [
         {
             "label": "build",
-            "dependsOn":["api.build","domain.build","infrastructure.build"]
+            "dependsOn":["api.build","domain.build","infrastructure.build"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
 
         {

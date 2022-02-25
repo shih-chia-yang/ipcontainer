@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "practice.api": {
+    "service.practice.api": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

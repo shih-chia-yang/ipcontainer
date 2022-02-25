@@ -6,6 +6,7 @@ public class UserProfileMapping:Profile
     {
         // CreateMap<TSource,TDestination>
         CreateMap<User, UserProfileViewModel>()
+            .ForMember(dest=>dest.Id,from=>from.MapFrom(u=>u.Id))
             .ForMember(dest => dest.Name, from => from.MapFrom(u => $"{u.FirstName} {u.LastName}"))
             .ForMember(dest => dest.Email, from => from.MapFrom(x => x.Email))
             .ForMember(dest => dest.Phone, from => from.MapFrom(x => x.Phone))
