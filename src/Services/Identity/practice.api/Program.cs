@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using practice.api.Applications.Services;
 using practice.api.Configuration.Models;
 using practice.api.Configuration.Swagger;
 using practice.domain.Kernel;
@@ -80,6 +81,8 @@ builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>()
 builder.Services.AddTransient<IRequestHandler<AddUserCommand>, AddUserCommandHandler>();
 builder.Services.AddTransient<IRequestHandler<UpdateUserCommand>, UpdateUserCommandHandler>();
 builder.Services.AddTransient<IRequestHandler<DeleteUserCommand>, DeleteUserCommandHandler>();
+builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<IAuthenticateManager, AuthenticateManager>();
 builder.Services.AddSingleton<IDispatcher, EventDispatcher>();
 builder.Services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
 builder.Services.AddSingleton<IEventBus, EventBus>();
