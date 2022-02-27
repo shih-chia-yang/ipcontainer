@@ -4,7 +4,7 @@ namespace practice.api.Configuration.Registry;
 
 public static partial class StartUpRegister
 {
-    public static WebApplicationBuilder SetApiVersion(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder SetCustomApiVersion(this WebApplicationBuilder builder)
     {
         builder.Services.AddVersionedApiExplorer(options=>
         {

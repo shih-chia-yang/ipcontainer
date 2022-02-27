@@ -15,7 +15,7 @@ builder
 .SetConfigOptions()
 .AddCustomDb()
 .RegisterCustomServices()
-.SetApiVersion()
+.SetCustomApiVersion()
 .SetJwtAuthentication()
 .AddPackage();
 
