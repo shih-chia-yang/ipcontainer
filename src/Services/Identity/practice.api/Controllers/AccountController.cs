@@ -13,6 +13,9 @@ using practice.api.Applications.Validators;
 
 namespace practice.api.v2.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -23,6 +26,14 @@ namespace practice.api.v2.Controllers
         private readonly IAuthenticateManager _authenticateManager;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="repo"></param>
+        /// <param name="authenticateManager"></param>
+        /// <param name="eventBus"></param>
+        /// <param name="mapper"></param>
         public AccountController(
             ILogger<AccountController> logger,
             IUserRepository repo,
@@ -37,6 +48,7 @@ namespace practice.api.v2.Controllers
             _authenticateManager = authenticateManager;
             _mapper = mapper;
         }
+
         /// <summary>
         /// 登入
         /// </summary>
@@ -65,6 +77,11 @@ namespace practice.api.v2.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// 註冊
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [Route("register")]
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] UserRegistration request)
@@ -104,6 +121,11 @@ namespace practice.api.v2.Controllers
             
         }
 
+        /// <summary>
+        /// refresh token
+        /// </summary>
+        /// <param name="tokenRequest"></param>
+        /// <returns></returns>
         [Route("refreshtoken")]
         [HttpPost]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
